@@ -1,0 +1,6 @@
+outs:
+- md5: 5816648f8ffe2821794d09f4126e3b22.dir
+  size: 2877268127
+  nfiles: 9
+  hash: md5
+  path: lidar

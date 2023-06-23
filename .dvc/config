@@ -1,0 +1,4 @@
+[core]
+    remote = co2_remote
+['remote "co2_remote"']
+    url = gdrive://1sGvbmAThRNScPCkLM82w7LyOrHUCuxSL
