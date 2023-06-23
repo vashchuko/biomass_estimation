@@ -1,108 +1,108 @@
 schema: '2.0'
 stages:
   prepare_lidar:
-    cmd: python src\\steps\\prepare_lidar.py data\\aoi\\aoiTEST.shp data\\lidar data\\prepared\\lidar
+    cmd: python src/steps/prepare_lidar.py data/aoi/aoiTEST.shp data/lidar data/prepared/lidar
     deps:
-    - path: data\\aoi
+    - path: data/aoi
       hash: md5
       md5: f27b76eb06e15064504b2822d2a008b9.dir
       size: 1093
       nfiles: 6
-    - path: data\\lidar
+    - path: data/lidar
       hash: md5
       md5: 5816648f8ffe2821794d09f4126e3b22.dir
       size: 2877268127
       nfiles: 9
-    - path: src\\steps\\prepare_lidar.py
+    - path: src/steps/prepare_lidar.py
       hash: md5
       md5: 500611c26ef8a7851c225238cbcdaf8d
       size: 5457
     outs:
-    - path: data\\prepared\\lidar
+    - path: data/prepared/lidar
       hash: md5
       md5: cbd5c504f1163e0c724f679d68cb9664.dir
       size: 29687993
       nfiles: 10
   prepare_imagery:
-    cmd: python src\\steps\\prepare_imagery.py data\\prepared\\lidar\\subset.csv data\\imagery
-      data\\prepared\\imagery
+    cmd: python src/steps/prepare_imagery.py data/prepared/lidar/subset.csv data/imagery
+      data/prepared/imagery
     deps:
-    - path: data\\imagery
+    - path: data/imagery
       hash: md5
       md5: 3da288053f1df643d88c6076d621835c.dir
       size: 1516556490
       nfiles: 22
-    - path: data\\prepared\\lidar
+    - path: data/prepared/lidar
       hash: md5
       md5: cbd5c504f1163e0c724f679d68cb9664.dir
       size: 29687993
       nfiles: 10
-    - path: src\\steps\\prepare_imagery.py
+    - path: src/steps/prepare_imagery.py
       hash: md5
       md5: 2c83c2d4dc1e0f9aa3bdfe427b5c19c7
       size: 5548
     outs:
-    - path: data\\prepared\\imagery
+    - path: data/prepared/imagery
       hash: md5
       md5: ca760cb5e52834cbed0406e12f30df5b.dir
       size: 30392587
       nfiles: 1
   split:
-    cmd: python src\\steps\\split.py data\\prepared\\imagery\\subset_raster.csv data\\split
+    cmd: python src/steps/split.py data/prepared/imagery/subset_raster.csv data/split
     deps:
-    - path: data\\prepared\\imagery
+    - path: data/prepared/imagery
       hash: md5
       md5: ca760cb5e52834cbed0406e12f30df5b.dir
       size: 30392587
       nfiles: 1
-    - path: src\\steps\\split.py
+    - path: src/steps/split.py
       hash: md5
       md5: 61daa7a53d9ff7ee5fb95cd7c7f7f0be
       size: 1409
     outs:
-    - path: data\\split
+    - path: data/split
       hash: md5
       md5: a96787db75efae4859fb4bc4f597692b.dir
       size: 5076294
       nfiles: 4
   train:
-    cmd: python src\\steps\\train.py data\\split data\\model
+    cmd: python src/steps/train.py data/split data/model
     deps:
-    - path: data\\split
+    - path: data/split
       hash: md5
       md5: a96787db75efae4859fb4bc4f597692b.dir
       size: 5076294
       nfiles: 4
-    - path: src\\steps\\train.py
+    - path: src/steps/train.py
       hash: md5
       md5: cff2ca2916ac595288b6386f88213896
       size: 2566
     outs:
-    - path: data\\model
+    - path: data/model
       hash: md5
-      md5: fa1a63773bc5bdae7473aa1307699416.dir
-      size: 57293134
+      md5: e2ad885c2543dc13d5219ed68e0b5119.dir
+      size: 57276806
       nfiles: 1
   evaluate:
-    cmd: python src\\steps\\evaluate.py data\\split data\\model\\stacking.pkl data\\evaluate
+    cmd: python src/steps/evaluate.py data/split data/model/stacking.pkl data/evaluate
     deps:
-    - path: data\\model
+    - path: data/model
       hash: md5
-      md5: fa1a63773bc5bdae7473aa1307699416.dir
-      size: 57293134
+      md5: e2ad885c2543dc13d5219ed68e0b5119.dir
+      size: 57276806
       nfiles: 1
-    - path: data\\split
+    - path: data/split
       hash: md5
       md5: a96787db75efae4859fb4bc4f597692b.dir
       size: 5076294
       nfiles: 4
-    - path: src\\steps\\evaluate.py
+    - path: src/steps/evaluate.py
       hash: md5
       md5: 58c43ebdd70fb1f0a7ae45c8d88ee11b
       size: 912
     outs:
-    - path: data\\evaluate
+    - path: data/evaluate
       hash: md5
-      md5: c85a30dfad79a88f557fb788f7fad56f.dir
+      md5: 7eff863dd14d075c49405a250c1fec09.dir
       size: 28
       nfiles: 1

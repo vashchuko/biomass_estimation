@@ -1,44 +1,44 @@
 stages:
   prepare_lidar:
-    cmd: python src\\steps\\prepare_lidar.py data\\aoi\\aoiTEST.shp data\\lidar data\\prepared\\lidar
+    cmd: python src/steps/prepare_lidar.py data/aoi/aoiTEST.shp data/lidar data/prepared/lidar
     deps:
-      - data\\aoi
-      - data\\lidar
-      - src\\steps\\prepare_lidar.py
+      - data/aoi
+      - data/lidar
+      - src/steps/prepare_lidar.py
     outs:
-      - data\\prepared\\lidar
+      - data/prepared/lidar
 
   prepare_imagery:
-    cmd: python src\\steps\\prepare_imagery.py data\\prepared\\lidar\\subset.csv data\\imagery data\\prepared\\imagery
+    cmd: python src/steps/prepare_imagery.py data/prepared/lidar/subset.csv data/imagery data/prepared/imagery
     deps:
-      - data\\prepared\\lidar
-      - data\\imagery
-      - src\\steps\\prepare_imagery.py
+      - data/prepared/lidar
+      - data/imagery
+      - src/steps/prepare_imagery.py
     outs:
-      - data\\prepared\\imagery
+      - data/prepared/imagery
 
   split:
-    cmd: python src\\steps\\split.py data\\prepared\\imagery\\subset_raster.csv data\\split
+    cmd: python src/steps/split.py data/prepared/imagery/subset_raster.csv data/split
     deps:
-      - data\\prepared\\imagery
-      - src\\steps\\split.py
+      - data/prepared/imagery
+      - src/steps/split.py
     outs:
-      - data\\split
+      - data/split
 
   train:
-    cmd: python src\\steps\\train.py data\\split data\\model
+    cmd: python src/steps/train.py data/split data/model
     deps:
-      - data\\split
-      - src\\steps\\train.py
+      - data/split
+      - src/steps/train.py
     outs:
-      - data\\model
+      - data/model
 
   evaluate:
-    cmd: python src\\steps\\evaluate.py data\\split data\\model\\stacking.pkl data\\evaluate
+    cmd: python src/steps/evaluate.py data/split data/model/stacking.pkl data/evaluate
     deps:
-      - data\\split
-      - data\\model
-      - src\\steps\\evaluate.py
+      - data/split
+      - data/model
+      - src/steps/evaluate.py
     outs:
-      - data\\evaluate
+      - data/evaluate
 
