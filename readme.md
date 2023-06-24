@@ -9,7 +9,7 @@ Project install steps:
 `git clone https://github.com/vashchuko/biomass_estimation.git`
 - create virtual environment
 `python -m venv env`
-- activate virtual environment `source myvenv/bin/activate` (for Linux and MacOS)
+- activate virtual environment `source env/bin/activate` (for Linux and MacOS)
 - install dependecies using pip
 `pip install -r requirements.txt`
 - pull needed data using dvc (it can take up to 20 minutes, please be patient, to see the progress we use verbose flag in here)
