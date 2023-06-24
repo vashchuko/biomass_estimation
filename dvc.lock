@@ -57,8 +57,8 @@ stages:
       nfiles: 1
     - path: src/steps/split.py
       hash: md5
-      md5: 04b4e464befb0f434e94cf1016d0d50d
-      size: 1453
+      md5: 61daa7a53d9ff7ee5fb95cd7c7f7f0be
+      size: 1409
     outs:
     - path: data/split
       hash: md5
@@ -80,16 +80,16 @@ stages:
     outs:
     - path: data/model
       hash: md5
-      md5: 782f8f726c9abab12eae0c59516784a4.dir
-      size: 57283782
+      md5: 7318a0f8e19b8a29af92fc407161f69f.dir
+      size: 57222302
       nfiles: 1
   evaluate:
     cmd: python src/steps/evaluate.py data/split data/model/stacking.pkl data/evaluate
     deps:
     - path: data/model
       hash: md5
-      md5: 782f8f726c9abab12eae0c59516784a4.dir
-      size: 57283782
+      md5: 7318a0f8e19b8a29af92fc407161f69f.dir
+      size: 57222302
       nfiles: 1
     - path: data/split
       hash: md5
@@ -103,6 +103,24 @@ stages:
     outs:
     - path: data/evaluate
       hash: md5
-      md5: 8c3098c093d6bfe3f157c76d439e1717.dir
+      md5: aa5791f49aab2ad5ac8ca99d21e04ab9.dir
       size: 29
       nfiles: 1
+  deepchecks_validation:
+    cmd: python src/steps/deepchecks_validation.py data/split data/deepchecks_validation
+    deps:
+    - path: data/split
+      hash: md5
+      md5: a96787db75efae4859fb4bc4f597692b.dir
+      size: 5076294
+      nfiles: 4
+    - path: src/steps/deepchecks_validation.py
+      hash: md5
+      md5: 2dbf688589efbba9c8b0fe93ec563be5
+      size: 1971
+    outs:
+    - path: data/deepchecks_validation
+      hash: md5
+      md5: 1d377eed97f57518197fb904cff4df60.dir
+      size: 23158102
+      nfiles: 3
