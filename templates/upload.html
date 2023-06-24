@@ -5,11 +5,14 @@
 </head>
 <body>
     <h1>Upload File</h1>
+    {% if error_message %}
+    <p>Error: {{ error_message }}</p>
+    {% endif %}
     <p>Please, upload a geoJSON for the region of interest.</p>
     <p>The estimations will be predicted for this region.</p>
-    <form method=post enctype=multipart/form-data>
-        <input type=file name=file>
-        <input type=submit value=Upload>
+    <form method="post" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <input type="submit" value="Upload">
     </form>
 </body>
 </html>
