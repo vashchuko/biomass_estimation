@@ -6,7 +6,7 @@ from src.model import EstimateModel
 UPLOAD_FOLDER = 'data/nature_reserves'
 ALLOWED_EXTENSIONS = {'geojson'}
 
-app = Flask(__name__, template_folder='/templates')
+app = Flask(__name__, template_folder='templates')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def allowed_file(filename):
@@ -21,10 +21,13 @@ def upload_file():
             flash('No file part')
             return redirect(request.url)
         file = request.files['file']
-        # If the user does not select a file, the browser submits an
-        # empty file without a filename.
+        # If the user does not select a file, display a message
         if file.filename == '':
-            flash('No selected file')
+            flash('Please select and upload a file')
+            return redirect(request.url)
+        # If the file extension is not allowed, display a message
+        if not allowed_file(file.filename):
+            flash('File extension not allowed')
             return redirect(request.url)
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
@@ -37,16 +40,16 @@ def upload_file():
             
             # Pass the results to the results.html template
             return render_template('results.html', results=results)
-            
-    return '''
-    <!doctype html>
-    <title>Upload new File</title>
-    <h1>Upload new File</h1>
-    <form method=post enctype=multipart/form-data>
-      <input type=file name=file>
-      <input type=submit value=Upload>
-    </form>
-    '''
+    return render_template('upload.html')        
+    # return '''
+    # <!doctype html>
+    # <title>Upload new File</title>
+    # <h1>Upload new File</h1>
+    # <form method=post enctype=multipart/form-data>
+    #   <input type=file name=file>
+    #   <input type=submit value=Upload>
+    # </form>
+    # '''
 
 if __name__ == '__main__':
     app.run(debug=True)
