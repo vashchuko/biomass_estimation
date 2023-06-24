@@ -8,6 +8,7 @@ from sklearn.linear_model import ElasticNet
 from sklearn.ensemble import StackingRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import mean_absolute_percentage_error
 import pickle
 
 
@@ -17,6 +18,8 @@ if len(sys.argv) != 3:
         '\tpython3 train.py input_dir output_dir \n'
     )
     sys.exit(1)
+
+np.random.seed(1234)
 
 input_dir = sys.argv[1]
 output_dir = sys.argv[2]

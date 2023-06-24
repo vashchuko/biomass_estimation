@@ -25,6 +25,14 @@ stages:
     outs:
       - data/split
 
+  deepchecks_validation:
+    cmd: python src/steps/deepchecks_validation.py data/split data/deepchecks_validation
+    deps:
+      - data/split
+      - src/steps/deepchecks_validation.py
+    outs:
+      - data/deepchecks_validation
+
   train:
     cmd: python src/steps/train.py data/split data/model
     deps:
