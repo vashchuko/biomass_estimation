@@ -15,13 +15,13 @@ stages:
       nfiles: 9
     - path: src/steps/prepare_lidar.py
       hash: md5
-      md5: 500611c26ef8a7851c225238cbcdaf8d
-      size: 5457
+      md5: 27d1e18f6b3dbe1d053a42b5540479ee
+      size: 5321
     outs:
     - path: data/prepared/lidar
       hash: md5
-      md5: cbd5c504f1163e0c724f679d68cb9664.dir
-      size: 29687993
+      md5: 96ed2ee839e0549d7a02c96e692f54c7.dir
+      size: 29684302
       nfiles: 10
   prepare_imagery:
     cmd: python src/steps/prepare_imagery.py data/prepared/lidar/subset.csv data/imagery
@@ -34,26 +34,26 @@ stages:
       nfiles: 22
     - path: data/prepared/lidar
       hash: md5
-      md5: cbd5c504f1163e0c724f679d68cb9664.dir
-      size: 29687993
+      md5: 96ed2ee839e0549d7a02c96e692f54c7.dir
+      size: 29684302
       nfiles: 10
     - path: src/steps/prepare_imagery.py
       hash: md5
-      md5: 2c83c2d4dc1e0f9aa3bdfe427b5c19c7
-      size: 5548
+      md5: b70138c34146f0263ce4f627057fec80
+      size: 5430
     outs:
     - path: data/prepared/imagery
       hash: md5
-      md5: ca760cb5e52834cbed0406e12f30df5b.dir
-      size: 30392587
+      md5: cbf4026850f85b841a52f40eea3db33e.dir
+      size: 30382214
       nfiles: 1
   split:
     cmd: python src/steps/split.py data/prepared/imagery/subset_raster.csv data/split
     deps:
     - path: data/prepared/imagery
       hash: md5
-      md5: ca760cb5e52834cbed0406e12f30df5b.dir
-      size: 30392587
+      md5: cbf4026850f85b841a52f40eea3db33e.dir
+      size: 30382214
       nfiles: 1
     - path: src/steps/split.py
       hash: md5
@@ -62,48 +62,48 @@ stages:
     outs:
     - path: data/split
       hash: md5
-      md5: a96787db75efae4859fb4bc4f597692b.dir
-      size: 5076294
+      md5: 543bd19b4904963b34c06715b327a251.dir
+      size: 5055546
       nfiles: 4
   train:
     cmd: python src/steps/train.py data/split data/model
     deps:
     - path: data/split
       hash: md5
-      md5: a96787db75efae4859fb4bc4f597692b.dir
-      size: 5076294
+      md5: 543bd19b4904963b34c06715b327a251.dir
+      size: 5055546
       nfiles: 4
     - path: src/steps/train.py
       hash: md5
-      md5: 680b27bad20f4d1ad878eaf7e5f00ec0
-      size: 3148
+      md5: d752e59e6007dc9a8974d15a33c5c02e
+      size: 3056
     outs:
     - path: data/model
       hash: md5
-      md5: 9eac5820a238d6e1a24ced34d4bcdd57.dir
-      size: 57329490
+      md5: bde4dad2cdb1047dd2535c13c1b0763b.dir
+      size: 57288792
       nfiles: 1
   evaluate:
     cmd: python src/steps/evaluate.py data/split data/model/stacking.pkl data/evaluate
     deps:
     - path: data/model
       hash: md5
-      md5: 9eac5820a238d6e1a24ced34d4bcdd57.dir
-      size: 57329490
+      md5: bde4dad2cdb1047dd2535c13c1b0763b.dir
+      size: 57288792
       nfiles: 1
     - path: data/split
       hash: md5
-      md5: a96787db75efae4859fb4bc4f597692b.dir
-      size: 5076294
+      md5: 543bd19b4904963b34c06715b327a251.dir
+      size: 5055546
       nfiles: 4
     - path: src/steps/evaluate.py
       hash: md5
-      md5: a469011097db66f82da815c64155d8a4
-      size: 951
+      md5: 58c43ebdd70fb1f0a7ae45c8d88ee11b
+      size: 912
     outs:
     - path: data/evaluate
       hash: md5
-      md5: 5ad9f2a2085d4285615debe898f2b31e.dir
+      md5: fae46a9314b0f51abece97f8a3b65f17.dir
       size: 29
       nfiles: 1
   deepchecks_validation:
@@ -111,16 +111,16 @@ stages:
     deps:
     - path: data/split
       hash: md5
-      md5: a96787db75efae4859fb4bc4f597692b.dir
-      size: 5076294
+      md5: 543bd19b4904963b34c06715b327a251.dir
+      size: 5055546
       nfiles: 4
     - path: src/steps/deepchecks_validation.py
       hash: md5
-      md5: 2dbf688589efbba9c8b0fe93ec563be5
-      size: 1971
+      md5: b91f529e37cdd296fc6c609a5496f50a
+      size: 1915
     outs:
     - path: data/deepchecks_validation
       hash: md5
-      md5: f6a742660b69a10d4543d49cabaffff4.dir
-      size: 23158102
+      md5: 021a7d45beda6d8584ca60b1bee9f50d.dir
+      size: 23156200
       nfiles: 3
