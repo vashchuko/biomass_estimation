@@ -75,8 +75,8 @@ stages:
       nfiles: 4
     - path: src/steps/train.py
       hash: md5
-      md5: e60f8378665f0fa141b98059f857b3d5
-      size: 2668
+      md5: 680b27bad20f4d1ad878eaf7e5f00ec0
+      size: 3148
     outs:
     - path: data/model
       hash: md5
@@ -121,6 +121,6 @@ stages:
     outs:
     - path: data/deepchecks_validation
       hash: md5
-      md5: 1d377eed97f57518197fb904cff4df60.dir
+      md5: f6a742660b69a10d4543d49cabaffff4.dir
       size: 23158102
       nfiles: 3
