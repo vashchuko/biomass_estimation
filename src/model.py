@@ -12,8 +12,6 @@ from rasterio.mask import mask
 
 
 class EstimateModel():
-    IMAGES_PATH = 'data\nature_reserves'
-
 
     def __init__(self, dump_path: str) -> None:
         """
@@ -25,24 +23,14 @@ class EstimateModel():
         Raises:
             FileNotFoundError: If the dump file doesn't exist.
         """
-    
+        self.IMAGES_PATH = 'data/nature_reserves'
         if os.path.isfile(dump_path):
             self.__estimator = pickle.load(open(dump_path, 'rb'))
         else:
             raise FileNotFoundError('Model dump file doesn\'t exist')
         
-    def predict(self, shape_file) -> dict:
-        # Read shape file
-        shp_file = gpd.read_file(shape_file) 
-        # # Save shape file as GeoJSON 
-        # shp_file.to_file('region.geojson', driver='GeoJSON')
-        # # Read GeoJSON
-        # aoi_geojson = gpd.read_file(geojson_file)
-        
-        # TODO: check if it works
-        # Convert to GeoJSON
-        aoi_geojson = shp_file.to_crs('EPSG:4326').__geo_interface__
-        
+    def predict(self, geojson_file) -> dict:
+        aoi_geojson = gpd.read_file(geojson_file)
         geometry = aoi_geojson.iloc[0].geometry
         epsg = self.__get_epsg_code(geometry.centroid.x, geometry.centroid.y)
         aoi_geojson['geometry'] = aoi_geojson.geometry.to_crs(epsg=epsg)
@@ -54,7 +42,7 @@ class EstimateModel():
         output_images_results = []
         for image, image_polygons in zip(input_images, input_images_polygons):
             image, image_transform = mask(image, image_polygons, crop=True)
-            image_points = self.__get_points_grid_over_image_polygon(image, image_transform, image_polygons)
+            image_points = self.__get_points_grid_over_image_polygon(image, image_transform, image_polygons, epsg)
             output_images_results.append((image, image_transform, image_points))
 
         output_features_df = self.__extract_features(output_images_results)
@@ -76,7 +64,7 @@ class EstimateModel():
     def __get_pictures(self) -> dict:
         # Collect subdirectories in pictures folder. Avoid any additional folders
         pictures_path = []
-        subfolders = [f.path for f in os.scandir(IMAGES_PATH) if f.is_dir()]
+        subfolders = [f.path for f in os.scandir(self.IMAGES_PATH) if f.is_dir()]
         for dirname in list(subfolders):
             pictures_path.extend([os.path.join(dirname, f) for f in os.listdir(dirname) if os.path.isfile(os.path.join(dirname, f))])
 

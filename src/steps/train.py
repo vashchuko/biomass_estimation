@@ -86,3 +86,5 @@ def retrain_model(X_train, y_train):
     stacking_regressor.fit(X_train, y_train)
     pickle.dump(stacking_regressor, open(os.path.join(output_dir, 'stacking.pkl'), 'wb'))
     print('Model was retrained')
+
+retrain_model(X_train, y_train)

@@ -6,7 +6,7 @@ from src.model import EstimateModel
 UPLOAD_FOLDER = 'data/nature_reserves'
 ALLOWED_EXTENSIONS = {'geojson'}
 
-app = Flask(__name__, template_folder='../templates')
+app = Flask(__name__, template_folder='/templates')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def allowed_file(filename):
@@ -32,7 +32,7 @@ def upload_file():
             file.save(file_path)
             
             # Use the uploaded file for prediction
-            model = EstimateModel('data/model')
+            model = EstimateModel('data/model/stacking.pkl')
             results = model.predict(file_path)
             
             # Pass the results to the results.html template
