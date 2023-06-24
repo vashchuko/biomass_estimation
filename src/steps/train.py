@@ -26,6 +26,8 @@ os.makedirs(os.path.join(output_dir), exist_ok=True)
 X_train = pd.read_csv(os.path.join(input_dir, 'x_train.csv'))
 y_train = pd.read_csv(os.path.join(input_dir, 'y_train.csv'))
 
+np.random.seed(1234)
+
 # This model training too long, will be trained later
 
 # # Define the base models
