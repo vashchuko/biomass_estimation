@@ -1,8 +1,8 @@
-## Above Ground Biomass Estimation project :evergreen_tree:
+## CO2e Estimation project :evergreen_tree:
 
 **Project description:**
 Main idea is to estimate the amount of CO2 captured by forest. 
-For this purpose we use satellite data from Sentinel and GEDI to train ML model that calculates the CO2e collected by forest in an area of interest. 
+For this purpose we use satellite data from Sentinel and GEDI to train Machine Learning model that calculates the CO2e collected by forest in an area of interest estimating Aboveground Biomass density.
 
 Project install steps:
 - clone repo
@@ -17,6 +17,11 @@ Project install steps:
 - reproduce training pipeline
 `dvc repro`
 
-[DVC documentation](https://dvc.org/doc/start/data-management/data-versioning) 
+[DVC documentation](https://dvc.org/doc/start/data-management/data-versioning)
+
+Run app:
+ - run `python app.py`
+ - open http://127.0.0.1:5000/ in your browser and upload geoJSON from `data/nature_reserves/nature_reserves.geojson`
+ - wait for results
 
 For more information reach us via slack
