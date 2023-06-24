@@ -31,8 +31,18 @@ class EstimateModel():
         else:
             raise FileNotFoundError('Model dump file doesn\'t exist')
         
-    def predict(self, geojson_file) -> dict:
-        aoi_geojson = gpd.read_file(geojson_file)
+    def predict(self, shape_file) -> dict:
+        # Read shape file
+        shp_file = gpd.read_file(shape_file) 
+        # # Save shape file as GeoJSON 
+        # shp_file.to_file('region.geojson', driver='GeoJSON')
+        # # Read GeoJSON
+        # aoi_geojson = gpd.read_file(geojson_file)
+        
+        # TODO: check if it works
+        # Convert to GeoJSON
+        aoi_geojson = shp_file.to_crs('EPSG:4326').__geo_interface__
+        
         geometry = aoi_geojson.iloc[0].geometry
         epsg = self.__get_epsg_code(geometry.centroid.x, geometry.centroid.y)
         aoi_geojson['geometry'] = aoi_geojson.geometry.to_crs(epsg=epsg)
