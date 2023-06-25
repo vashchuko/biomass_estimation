@@ -8,7 +8,7 @@ class EstimateModelTest(unittest.TestCase):
         estimateModel = EstimateModel('.\\.\\data\\model\\stacking.pkl')
 
         # Act
-        prediction = estimateModel.predict('.\\.\\data\\nature_reserves\\nature_reserves.geojson')
+        prediction = estimateModel.predict('.\\.\\data\\nature_reserves\\sub_regions\\nature_reserves_sub1.geojson')
 
         # Arrange
         self.assertEqual(prediction['estimated_abgd'], 219343920)

@@ -24,4 +24,6 @@ Run app:
  - open http://127.0.0.1:5000/ in your browser and upload geoJSON from `data/nature_reserves/nature_reserves.geojson`
  - wait for results
 
+In order to test endpoint - use subregions from data/nature_reserves/sub_regions
+
 For more information reach us via slack
