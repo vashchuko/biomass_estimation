@@ -57,7 +57,8 @@ class EstimateModel():
 
         result = {}
         result['estimated_abgd'] = y_pred_estimation.sum()
-        result['estimated_co2e'] = result['estimated_abgd'] * 0.5
+        result['estimated_carbon'] = result['estimated_abgd'] * 0.5
+        result['estimated_co2e'] = result['estimated_carbon'] * 3.67
         return result
             
     
