@@ -13,7 +13,9 @@ from rasterio.mask import mask
 
 class EstimateModel():
 
-    def __init__(self, dump_path: str) -> None:
+    def __init__(self,
+                 dump_path: str, 
+                 ) -> None:
         """
         Initialize the estimator model.
 
@@ -70,6 +72,8 @@ class EstimateModel():
     
 
     def __get_pictures(self) -> dict:
+        # TODO: add code for uploading images for specific date
+        # prepare imagery
         # Collect subdirectories in pictures folder. Avoid any additional folders
         pictures_path = []
         subfolders = [f.path for f in os.scandir(self.IMAGES_PATH) if f.is_dir()]

@@ -14,5 +14,20 @@
         <input type="file" name="file">
         <input type="submit" value="Upload">
     </form>
+    <h3> Select a date range </h3>
+    <form action="" method='POST' name="date">
+        {{ form.csrt_token }}
+        {{ form.startdate.label }} {{form.startdate(class='datepicker')}} {{form.hidden_tag()}}
+        {{ form.enddate.label }} {{form.enddate(class='datepicker')}} {{form.hidden_tag()}}
+    <h3>Select cloud coverage</h3>
+    <form action="" method='POST' name="cloud">
+        {{ form.csrf_token }}
+        {{ form.cloud_coverage.label }} {{ form.cloud_coverage(class='cloud-input') }}
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.submit() }}
+        </p>
+</form>
+</form>
 </body>
 </html>
