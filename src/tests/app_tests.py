@@ -23,7 +23,7 @@ class AppTestCase(TestCase):
 
     def test_upload_file(self):
         
-        file = FileStorage(stream=open('data/nature_reserves/nature_reserves.geojson', 'rb'), filename='nature_reserves.geojson')
+        file = FileStorage(stream=open('data/nature_reserves/sub_regions/nature_reserves_sub1.geojson', 'rb'), filename='nature_reserves_sub1.geojson')
 
         response = self.client.post('/', data={'file': file})
         self.assert_template_used('results.html')

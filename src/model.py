@@ -32,25 +32,33 @@ class EstimateModel():
     def predict(self, geojson_file) -> dict:
         aoi_geojson = gpd.read_file(geojson_file)
         geometry = aoi_geojson.iloc[0].geometry
-        epsg = self.__get_epsg_code(geometry.centroid.x, geometry.centroid.y)
+        # epsg = self.__get_epsg_code(geometry.centroid.x, geometry.centroid.y)
+        epsg = '32634'
         aoi_geojson['geometry'] = aoi_geojson.geometry.to_crs(epsg=epsg)
 
         pictures_dict = self.__get_pictures()
-        input_images = [pictures_dict['20220620'], pictures_dict['20220722']]
-        input_images_polygons = [[aoi_geojson.iloc[0]['geometry']], aoi_geojson.iloc[1:6]['geometry']]
 
         output_images_results = []
-        for image, image_polygons in zip(input_images, input_images_polygons):
-            image, image_transform = mask(image, image_polygons, crop=True)
-            image_points = self.__get_points_grid_over_image_polygon(image, image_transform, image_polygons, epsg)
-            output_images_results.append((image, image_transform, image_points))
-
+        for picture_key in pictures_dict.keys():
+            image = pictures_dict[picture_key]
+            for _, polygon_row in aoi_geojson.iterrows():
+                image_polygons = [aoi_geojson.iloc[_]['geometry']]
+                try:
+                    image, image_transform = mask(image, image_polygons, crop=True)
+                    image_points = self.__get_points_grid_over_image_polygon(image, image_transform, image_polygons, epsg)
+                    output_images_results.append((image, image_transform, image_points))
+                except Exception as e:
+                    print(e)
+                    pass
+                    # For now we are ignoring this behaviour
+                    
         output_features_df = self.__extract_features(output_images_results)
         y_pred_estimation = self.__estimator.predict(output_features_df)
 
         result = {}
         result['estimated_abgd'] = y_pred_estimation.sum()
-        result['estimated_co2e'] = result['estimated_abgd'] * 0.5
+        result['estimated_carbon'] = result['estimated_abgd'] * 0.5
+        result['estimated_co2e'] = result['estimated_carbon'] * 3.67
         return result
             
     
@@ -176,6 +184,9 @@ class EstimateModel():
         for image, image_transform, image_points in images_results:
             # Get features from image
             features = self.__map_points_to_images(image_points, image, image_transform)
+            if len(features[0]) == 0:
+                continue
+
             feature_names = self.__get_feature_names()
 
             # Normalize features
