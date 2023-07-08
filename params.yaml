@@ -2,6 +2,9 @@ prepare_imagery:
   features_channel_key: 'TCI'
   cloud_channel_key: 'CLDPRB'
 
+train:
+  use_grid_search: True
+
 split:
   results_column: 'agbd'
   group_column: 'shot_number'
