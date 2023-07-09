@@ -1,5 +1,6 @@
 import sys
 import os
+import pickle
 import pandas as pd
 import numpy as np
 from sklearn.svm import SVR
@@ -9,29 +10,33 @@ from sklearn.ensemble import StackingRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import mean_absolute_percentage_error
-import pickle
 
-
-if len(sys.argv) != 3:
-    sys.stderr.write('Arguments error. Usage:\n')
-    sys.stderr.write(
-        '\tpython3 train.py input_dir output_dir \n'
-    )
-    sys.exit(1)
-
-np.random.seed(1234)
-
-input_dir = sys.argv[1]
-output_dir = sys.argv[2]
-
-os.makedirs(os.path.join(output_dir), exist_ok=True)
-
-X_train = pd.read_csv(os.path.join(input_dir, 'x_train.csv'))
-y_train = pd.read_csv(os.path.join(input_dir, 'y_train.csv'))
-
-# Define the custom scoring function for MAPE
 def mape_scorer(y_true, y_pred):
     return mean_absolute_percentage_error(y_true, y_pred)
+
+def retrain_model(X_train, y_train, output_dir):
+    """Function that retrains a model on new data
+    
+    Args:
+        X_train (pandas.DataFrame): The training features.
+        y_train (pandas.Series or numpy.ndarray): The training labels.
+        output_dir (str): The directory to save the retrained model.
+    """
+
+    estimators = [
+        ('rf', RandomForestRegressor()),
+        ('en', ElasticNet(alpha=0.001)),
+        ('xgb', XGBRegressor(eta=0.05, subsample=1.0, max_depth=5, min_child_weight=3)),
+    ]
+
+    stacking_regressor = StackingRegressor(
+        estimators=estimators,
+        final_estimator=XGBRegressor(eta=0.05, max_depth=5)
+    )
+
+    stacking_regressor.fit(X_train, y_train)
+    pickle.dump(stacking_regressor, open(os.path.join(output_dir, 'stacking.pkl'), 'wb'))
+    print('Model was retrained')
 
 def hyper_parameter_tuning(X_train, y_train):
     """Function that searches for the best parameters for model"""
@@ -72,22 +77,20 @@ def hyper_parameter_tuning(X_train, y_train):
     best_stacking_regressor = grid_search.best_estimator_
     return best_stacking_regressor
 
-def retrain_model(X_train, y_train):
-    """Function that retrains a model on new data"""
+if __name__ == '__main__':
+    if len(sys.argv) != 3:
+        sys.stderr.write('Arguments error. Usage:\n')
+        sys.stderr.write('\tpython3 train.py input_dir output_dir \n')
+        sys.exit(1)
 
-    estimators = [('rf', RandomForestRegressor()),
-                ('en', ElasticNet(alpha=0.001)),
-                ('xgb', XGBRegressor(eta=0.05,
-                                    subsample=1.0,
-                                    max_depth=5,
-                                    min_child_weight=3,
-                                    ))]
+    np.random.seed(1234)
 
-    stacking_regressor = StackingRegressor(estimators=estimators,
-                            final_estimator=XGBRegressor(eta=0.05, max_depth=5))
+    input_dir = sys.argv[1]
+    output_dir = sys.argv[2]
 
-    stacking_regressor.fit(X_train, y_train)
-    pickle.dump(stacking_regressor, open(os.path.join(output_dir, 'stacking.pkl'), 'wb'))
-    print('Model was retrained')
+    os.makedirs(os.path.join(output_dir), exist_ok=True)
 
-retrain_model(X_train, y_train)
+    X_train = pd.read_csv(os.path.join(input_dir, 'x_train.csv'))
+    y_train = pd.read_csv(os.path.join(input_dir, 'y_train.csv'))
+
+    retrain_model(X_train, y_train, output_dir)
