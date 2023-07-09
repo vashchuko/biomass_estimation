@@ -1,6 +1,4 @@
-import os
 import unittest
-from flask import Flask
 from flask_testing import TestCase
 from werkzeug.datastructures import FileStorage
 from app import app, allowed_file
