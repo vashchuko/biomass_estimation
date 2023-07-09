@@ -160,4 +160,5 @@ cython_debug/
 #.idea/
 
 temp/
+copernicus_key.json
 .vscode/

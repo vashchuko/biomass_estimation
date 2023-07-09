@@ -20,6 +20,7 @@ Project install steps:
 [DVC documentation](https://dvc.org/doc/start/data-management/data-versioning)
 
 Run app:
+!NB: now you need to have credentials stored in the same directory as app.py. They will be provided in the submission.
  - run `python app.py`
  - open http://127.0.0.1:5000/ in your browser
  - upload geoJSON from `data/nature_reserves/` folder. In order to test endpoint - use subregions from `data/nature_reserves/sub_regions`. For them estimation will be done faster.

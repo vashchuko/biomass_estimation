@@ -9,6 +9,7 @@ from rasterio.transform import xy
 from shapely.geometry import Point
 from sklearn import preprocessing
 from rasterio.mask import mask
+from src.copernicus_client import CopernicusClient
 
 
 class EstimateModel():
@@ -31,23 +32,24 @@ class EstimateModel():
         else:
             raise FileNotFoundError('Model dump file doesn\'t exist')
         
-    def predict(self, geojson_file) -> dict:
-        aoi_geojson = gpd.read_file(geojson_file)
-        geometry = aoi_geojson.iloc[0].geometry
-        # epsg = self.__get_epsg_code(geometry.centroid.x, geometry.centroid.y)
-        epsg = '32634'
-        aoi_geojson['geometry'] = aoi_geojson.geometry.to_crs(epsg=epsg)
+    def predict(self, geojson_file, use_hub:bool = True) -> dict:
+        images_path = None
+        if use_hub:
+            images_path = CopernicusClient().with_credentials().download_images(geojson_file)
 
-        pictures_dict = self.__get_pictures()
+        aoi_geojson = gpd.read_file(geojson_file)
+        pictures_dict = self.__get_pictures(pictures_path=images_path)
 
         output_images_results = []
         for picture_key in pictures_dict.keys():
-            image = pictures_dict[picture_key]
+            raster_image = pictures_dict[picture_key]
+            aoi_geojson = aoi_geojson.to_crs(raster_image.crs)
+
             for _, polygon_row in aoi_geojson.iterrows():
                 image_polygons = [aoi_geojson.iloc[_]['geometry']]
                 try:
-                    image, image_transform = mask(image, image_polygons, crop=True)
-                    image_points = self.__get_points_grid_over_image_polygon(image, image_transform, image_polygons, epsg)
+                    image, image_transform = mask(raster_image, image_polygons, crop=True)
+                    image_points = self.__get_points_grid_over_image_polygon(image, image_transform, image_polygons, raster_image.crs)
                     output_images_results.append((image, image_transform, image_points))
                 except Exception as e:
                     print(e)
@@ -71,17 +73,17 @@ class EstimateModel():
         return feature_names
     
 
-    def __get_pictures(self) -> dict:
-        # TODO: add code for uploading images for specific date
-        # prepare imagery
+    def __get_pictures(self, pictures_path:list = None) -> dict:
         # Collect subdirectories in pictures folder. Avoid any additional folders
-        pictures_path = []
-        subfolders = [f.path for f in os.scandir(self.IMAGES_PATH) if f.is_dir()]
-        for dirname in list(subfolders):
-            pictures_path.extend([os.path.join(dirname, f) for f in os.listdir(dirname) if os.path.isfile(os.path.join(dirname, f))])
+        if pictures_path is None:
+            pictures_path = []
+            subfolders = [f.path for f in os.scandir(self.IMAGES_PATH) if f.is_dir()]
+            
+            for dirname in list(subfolders):
+                pictures_path.extend([os.path.join(dirname, f) for f in os.listdir(dirname) if os.path.isfile(os.path.join(dirname, f)) & ('TCI' in f) & ('2022' in f)])
 
         pictures_dict = {}
-        for picture_path in list(filter(lambda path: ('TCI' in path) & ('2022' in path), pictures_path)):
+        for picture_path in pictures_path:
             pictures_dict[re.search(r'\d{8}', picture_path).group()] = \
                 rasterio.open(picture_path, "r", driver="JP2OpenJPEG")
         return pictures_dict
@@ -164,6 +166,14 @@ class EstimateModel():
         return real_points_in_polygons
     
 
+    def __read_window(self, image, window):
+        window_values = (image[:, window.row_off:window.row_off + window.height, window.col_off:window.col_off + window.width])
+        
+        if window_values.size != 27:
+            return np.append(window_values.flatten(), np.zeros(27-window_values.size))
+        return window_values.flatten()
+
+
     def __map_points_to_images(self, points, image, image_transform):
         # Extract coordinates of points
         coords = [(point.x, point.y) for point in points]
@@ -174,10 +184,9 @@ class EstimateModel():
         pixels_coords = zip(pixel_rows, pixel_cols)
 
         # Wrap pixel locations with 3x3 grid
-        point_windows = [rasterio.windows.Window(pixel_cols - 1, pixel_rows - 1, 3, 3) for pixel_rows, pixel_cols in pixels_coords]
+        point_windows = [rasterio.windows.Window(pixel_cols - 1, pixel_rows - 1, 3, 3) for pixel_rows, pixel_cols in pixels_coords if (pixel_rows > 0) & (pixel_cols > 0)]
 
-        read_window = lambda image, window: image[:, window.row_off:window.row_off + window.height, window.col_off:window.col_off + window.width]
-        point_grids = [read_window(image, point_window).flatten() for point_window in point_windows]
+        point_grids = [self.__read_window(image, point_window) for point_window in point_windows]
 
         return point_grids
     
@@ -207,9 +216,3 @@ class EstimateModel():
                 final_features_df = pd.concat([final_features_df, features_df], ignore_index=True)
 
         return final_features_df
-
-
-    
-
-
-

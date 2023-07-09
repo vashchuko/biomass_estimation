@@ -1,6 +1,4 @@
-import os
 import unittest
-from flask import Flask
 from flask_testing import TestCase
 from werkzeug.datastructures import FileStorage
 from app import app, allowed_file
@@ -23,7 +21,7 @@ class AppTestCase(TestCase):
 
     def test_upload_file(self):
         
-        file = FileStorage(stream=open('data/nature_reserves/sub_regions/nature_reserves_sub1.geojson', 'rb'), filename='nature_reserves_sub1.geojson')
+        file = FileStorage(stream=open('data/nature_reserves/sub_regions/nature_reserves_sub5_simple.geojson', 'rb'), filename='nature_reserves_sub5_simple.geojson')
 
         response = self.client.post('/', data={'file': file})
         self.assert_template_used('results.html')
