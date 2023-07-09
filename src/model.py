@@ -14,7 +14,9 @@ from src.copernicus_client import CopernicusClient
 
 class EstimateModel():
 
-    def __init__(self, dump_path: str) -> None:
+    def __init__(self,
+                 dump_path: str, 
+                 ) -> None:
         """
         Initialize the estimator model.
 
@@ -30,10 +32,13 @@ class EstimateModel():
         else:
             raise FileNotFoundError('Model dump file doesn\'t exist')
         
-    def predict(self, geojson_file, use_hub:bool = True) -> dict:
+    def predict(self, geojson_file, start_date:str, end_date:str, cloud_cov:int, use_hub:bool = True) -> dict:
         images_path = None
         if use_hub:
-            images_path = CopernicusClient().with_credentials().download_images(geojson_file)
+            images_path = CopernicusClient().with_credentials().download_images(geojson_file,
+                                                                                start_date=start_date,
+                                                                                end_date=end_date,
+                                                                                max_cloudness=cloud_cov)
 
         aoi_geojson = gpd.read_file(geojson_file)
         pictures_dict = self.__get_pictures(pictures_path=images_path)
