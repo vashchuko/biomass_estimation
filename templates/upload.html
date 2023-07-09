@@ -8,19 +8,15 @@
     {% if error_message %}
     <p>Error: {{ error_message }}</p>
     {% endif %}
-    <p>Please, upload a geoJSON for the region of interest.</p>
-    <p>The estimations will be predicted for this region.</p>
-    <form method="post" enctype="multipart/form-data">
-        <input type="file" name="file">
-        <input type="submit" value="Upload">
-    </form>
     <h3> Select a date range </h3>
-    <form action="" method='POST' name="date">
+    <form action="" method='POST' enctype="multipart/form-data">
+        <p>Please, upload a geoJSON for the region of interest.</p>
+        <p>The estimations will be predicted for this region.</p>
+        <p><input type="file" name="file"></p>
         {{ form.csrt_token }}
         {{ form.startdate.label }} {{form.startdate(class='datepicker')}} {{form.hidden_tag()}}
         {{ form.enddate.label }} {{form.enddate(class='datepicker')}} {{form.hidden_tag()}}
-    <h3>Select cloud coverage</h3>
-    <form action="" method='POST' name="cloud">
+        <h3>Select cloud coverage</h3>
         {{ form.csrf_token }}
         {{ form.cloud_coverage.label }} {{ form.cloud_coverage(class='cloud-input') }}
         {{ form.hidden_tag() }}

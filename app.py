@@ -52,13 +52,13 @@ def upload_file():
                 file.save(file_path)
 
                 if form.validate_on_submit():
-                    session['startdate'] = form.startdate.data
-                    session['enddate'] = form.enddate.data
-                    return redirect('date')
+                    session['startdate'] = form.startdate.data.strftime('%Y%m%d')
+                    session['enddate'] = form.enddate.data.strftime('%Y%m%d')
+                    session['clouds'] = form.cloud_coverage.data
 
                 # Use the uploaded file and selected dates for prediction
                 model = EstimateModel(MODEL_PATH)
-                results = model.predict(file_path, session.get('startdate'), session.get('enddate'))
+                results = model.predict(file_path, session.get('startdate'), session.get('enddate'), session['clouds'])
 
                 # Pass the results to the results.html template
                 return render_template('results.html', results=results)
