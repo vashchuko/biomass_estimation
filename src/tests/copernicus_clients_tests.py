@@ -40,7 +40,7 @@ class CopernicusClientTest(unittest.TestCase):
         # Arrange
         # Act
         products = CopernicusClient().with_credentials()\
-            .download_images(aoi_path='data\\nature_reserves\\sub_regions\\map.geojson')
+            .download_images(aoi_path='data\\nature_reserves\\sub_regions\\nature_reserves_sub5_simple.geojson')
         
         # Assert
         self.assertIsInstance(products, list)

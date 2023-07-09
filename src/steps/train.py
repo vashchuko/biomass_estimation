@@ -1,5 +1,6 @@
 import sys
 import os
+import pickle
 import pandas as pd
 import numpy as np
 from sklearn.svm import SVR
@@ -13,33 +14,37 @@ import pickle
 import dvc.api
 
 
-if len(sys.argv) != 3:
-    sys.stderr.write('Arguments error. Usage:\n')
-    sys.stderr.write(
-        '\tpython3 train.py input_dir output_dir \n'
-    )
-    sys.exit(1)
-
-np.random.seed(1234)
-
-input_dir = sys.argv[1]
-output_dir = sys.argv[2]
-
-os.makedirs(os.path.join(output_dir), exist_ok=True)
-
-params = dvc.api.params_show()
-
-use_grid_search = params['train']['use_grid_search']
-
-X_train = pd.read_csv(os.path.join(input_dir, 'x_train.csv'))
-y_train = pd.read_csv(os.path.join(input_dir, 'y_train.csv'))
-
 # Define the custom scoring function for MAPE
 def mape_scorer(estimator, X_test, y_test):
     y_pred = estimator.predict(X_test)
     return mean_absolute_percentage_error(y_test, y_pred)
 
-def hyper_parameter_tuning(X_train, y_train):
+def retrain_model(X_train, y_train, output_dir):
+    """Function that retrains a model on new data
+    
+    Args:
+        X_train (pandas.DataFrame): The training features.
+        y_train (pandas.Series or numpy.ndarray): The training labels.
+        output_dir (str): The directory to save the retrained model.
+    """
+
+    estimators = [
+        ('rf', RandomForestRegressor()),
+        ('en', ElasticNet(alpha=0.001)),
+        ('xgb', XGBRegressor(eta=0.05, subsample=1.0, max_depth=5, min_child_weight=3)),
+    ]
+
+    stacking_regressor = StackingRegressor(
+        estimators=estimators,
+        final_estimator=XGBRegressor(eta=0.05, max_depth=5)
+    )
+
+    stacking_regressor.fit(X_train, y_train)
+    pickle.dump(stacking_regressor, open(os.path.join(output_dir, 'stacking.pkl'), 'wb'))
+    print('Model was retrained')
+
+
+def hyper_parameter_tuning(X_train, y_train, output_dir):
     """Function that searches for the best parameters for model"""
 
     # This model training too long, will be trained later
@@ -78,25 +83,26 @@ def hyper_parameter_tuning(X_train, y_train):
     pickle.dump(best_stacking_regressor, open(os.path.join(output_dir, 'stacking.pkl'), 'wb'))
     print('Model was retrained')
 
-def retrain_model(X_train, y_train):
-    """Function that retrains a model on new data"""
 
-    estimators = [('rf', RandomForestRegressor()),
-                ('en', ElasticNet(alpha=0.001)),
-                ('xgb', XGBRegressor(eta=0.05,
-                                    subsample=1.0,
-                                    max_depth=5,
-                                    min_child_weight=3,
-                                    ))]
+if __name__ == '__main__':
+    if len(sys.argv) != 3:
+        sys.stderr.write('Arguments error. Usage:\n')
+        sys.stderr.write('\tpython3 train.py input_dir output_dir \n')
+        sys.exit(1)
 
-    stacking_regressor = StackingRegressor(estimators=estimators,
-                            final_estimator=XGBRegressor(eta=0.05, max_depth=5))
+    np.random.seed(1234)
 
-    stacking_regressor.fit(X_train, y_train)
-    pickle.dump(stacking_regressor, open(os.path.join(output_dir, 'stacking.pkl'), 'wb'))
-    print('Model was retrained')
+    input_dir = sys.argv[1]
+    output_dir = sys.argv[2]
 
-if use_grid_search:
-    hyper_parameter_tuning(X_train, y_train)
-else:
-    retrain_model(X_train, y_train)
+    params = dvc.api.params_show()
+
+    use_grid_search = params['train']['use_grid_search']
+
+    X_train = pd.read_csv(os.path.join(input_dir, 'x_train.csv'))
+    y_train = pd.read_csv(os.path.join(input_dir, 'y_train.csv'))
+    
+    if use_grid_search:
+        hyper_parameter_tuning(X_train, y_train, output_dir)
+    else:
+        retrain_model(X_train, y_train, output_dir)
